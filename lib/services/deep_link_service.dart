@@ -53,48 +53,59 @@ class DeepLinkService {
               name: 'DeepLinkService');
         }
 
-        Get.toNamed(AppRoutes.listProduk, arguments: {'slug': productSlug});
-
-        Get.snackbar(
-          'Deep Link Berhasil!',
-          productSlug != null ? 'Mencari produk: $productSlug' : 'Membuka daftar produk',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-        );
+        Future.delayed(const Duration(milliseconds: 300), () {
+          Get.toNamed(AppRoutes.listProduk, arguments: {'slug': productSlug});
+        });
         return;
       }
     }
 
     // Handle: https://siboyo.store/food/{slug} or /product/{slug}
-    if ((uri.host == 'siboyo.store' || uri.host == 'www.siboyo.store') && uri.pathSegments.isNotEmpty) {
-      if (uri.pathSegments[0] == 'food' || uri.pathSegments[0] == 'product') {
-        if (uri.pathSegments.length > 1) {
-          productSlug = uri.pathSegments[1];
-          developer.log('✅ HTTPS - Product slug: $productSlug',
-              name: 'DeepLinkService');
+    if (uri.scheme == 'https' || uri.scheme == 'http') {
+      developer.log('   Detected HTTP(S) scheme', name: 'DeepLinkService');
 
-          // Navigate langsung ke detail produk dengan slug
-          Future.delayed(const Duration(milliseconds: 500), () {
-            Get.offAllNamed(AppRoutes.productDetail, arguments: {'slug': productSlug});
+      if (uri.host == 'siboyo.store' || uri.host == 'www.siboyo.store') {
+        developer.log('   Detected siboyo.store host', name: 'DeepLinkService');
 
-            Get.snackbar(
-              'Deep Link Berhasil!',
-              'Membuka produk: $productSlug',
-              snackPosition: SnackPosition.BOTTOM,
-              duration: const Duration(seconds: 2),
-            );
-          });
-        } else {
-          developer.log('✅ HTTPS - No slug, show list',
-              name: 'DeepLinkService');
+        if (uri.pathSegments.isNotEmpty) {
+          developer.log('   Path segments count: ${uri.pathSegments.length}', name: 'DeepLinkService');
 
-          // Jika tidak ada slug, tampilkan list
-          Future.delayed(const Duration(milliseconds: 500), () {
-            Get.offAllNamed(AppRoutes.listProduk);
-          });
+          if (uri.pathSegments[0] == 'food' || uri.pathSegments[0] == 'product') {
+            developer.log('   Detected food/product path', name: 'DeepLinkService');
+
+            if (uri.pathSegments.length > 1) {
+              productSlug = uri.pathSegments[1];
+              developer.log('✅ HTTPS - Product slug (ID): $productSlug',
+                  name: 'DeepLinkService');
+
+              // Navigate langsung ke detail produk dengan slug
+              final args = {'slug': productSlug};
+              developer.log('📦 Navigating to productDetail with args: $args',
+                  name: 'DeepLinkService');
+
+              // Delay untuk memastikan GetMaterialApp sudah siap
+              Future.delayed(const Duration(milliseconds: 300), () {
+                developer.log('🚀 Executing navigation...', name: 'DeepLinkService');
+                Get.offAllNamed(AppRoutes.productDetail, arguments: args);
+
+              });
+              return;
+            } else {
+              developer.log('✅ HTTPS - No slug, show list',
+                  name: 'DeepLinkService');
+
+              // Jika tidak ada slug, tampilkan list
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Get.offAllNamed(AppRoutes.listProduk);
+              });
+              return;
+            }
+          }
         }
       }
     }
+
+    developer.log('⚠️ Unhandled deep link pattern', name: 'DeepLinkService');
   }
 
   void dispose() {

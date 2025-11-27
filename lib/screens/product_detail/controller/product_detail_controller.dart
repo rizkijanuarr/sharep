@@ -18,46 +18,49 @@ class ProductDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print('🔵 ProductDetailController onInit called');
+    print('🔵 Get.arguments: ${Get.arguments}');
+    print('🔵 Get.arguments type: ${Get.arguments.runtimeType}');
+    print('🔵 Get.parameters: ${Get.parameters}');
     _loadProductFromArguments();
   }
 
   void _loadProductFromArguments() {
     final args = Get.arguments;
+    print('🔵 _loadProductFromArguments called');
+    print('🔵 Arguments: $args');
+    print('🔵 Arguments type: ${args.runtimeType}');
 
     if (args != null && args is Map<String, dynamic>) {
-      // Jika ada slug dari deep link
+      print('🔵 Arguments is Map<String, dynamic>');
+      // Jika ada slug dari deep link (sebenarnya ini adalah ID dari URL)
       if (args.containsKey('slug')) {
-        final slug = args['slug'] as String;
-
-        // Tampilkan pesan bahwa fitur ini belum tersedia
-        Get.snackbar(
-          'Info',
-          'Fitur detail produk by slug belum tersedia. Silakan pilih produk dari list.',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-        );
-
-        // Redirect ke list produk
-        Future.delayed(const Duration(seconds: 1), () {
-          Get.offAllNamed(AppRoutes.listProduk);
-        });
+        final productId = args['slug'] as String;
+        print('🔵 Loading product by slug (ID): $productId');
+        fetchProductDetail(productId);
       }
       // Jika ada ID, fetch dari API
       else if (args.containsKey('id')) {
         final productId = args['id'].toString();
+        print('🔵 Loading product by ID: $productId');
         fetchProductDetail(productId);
       }
       // Load dari data lengkap
       else {
+        print('🔵 Loading product from full data');
         product.value = ProductDetailModel.fromJson(args);
       }
     } else {
+      print('🔴 No arguments found or invalid format');
+      print('🔴 Redirecting to list produk...');
 
-      Get.snackbar(
-        'Error',
-        'Data produk tidak ditemukan',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Future.delayed(const Duration(milliseconds: 100), () {
+        Get.snackbar(
+          'Error',
+          'Data produk tidak ditemukan',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      });
 
       Future.delayed(const Duration(seconds: 1), () {
         Get.offAllNamed(AppRoutes.listProduk);

@@ -1,12 +1,10 @@
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.example.sharep",
-      "sha256_cert_fingerprints": [
-        "E0:93:E1:BB:D5:85:AC:B9:A7:D2:4C:D2:04:BC:46:C6:0D:21:72:FE:B6:32:00:7D:7E:4E:AF:0E:25:C9:4E:1E"
-      ]
-    }
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.example.sharep",
+    "sha256_cert_fingerprints": [
+      "GANTI_DENGAN_SHA256_KAMU_DISINI"
+    ]
   }
-]
+}]
